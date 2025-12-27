@@ -1,6 +1,6 @@
 # JK BMS Charger Controller for Power Station
 
-[Ру версия](README.ru.md) | [English](README.md)
+ [english](README.md) | [ру](README.ru.md)
 
 This project is designed to monitor a battery pack via **JK BMS** (JiKong) and automatically manage the charging process using a relay.
 
