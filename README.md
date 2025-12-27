@@ -26,10 +26,22 @@ The Arduino Pro Micro is ideal for this project due to its small form factor and
 | **BMS UART** | **GND** | **GND** | Common Ground |
 | **BMS UART** | **TX** | **RX (Pin 0)** | Data from BMS to Pro Micro |
 | **BMS UART** | **RX** | **TX (Pin 1)** | Commands from Pro Micro to BMS |
+| **BMS UART** | **B+ (VCC)** | **DO NOT CONNECT** | **DANGER: Full Battery Voltage!** |
 | **Relay Module** | **Signal / IN** | **Pin 3** | Relay Control Signal |
 | **Relay Module** | **GND** | **GND** | Common Ground |
 | **Power In** | **+5V** | **RAW** | Main power supply for Arduino |
 | **Power In** | **GND** | **GND** | Main power supply ground |
+
+&nbsp;  
+
+> [!CAUTION]  
+> **⚠️ HIGH VOLTAGE on BMS UART Connector!**  
+> 
+> The BMS communication port (where UART pins are located) includes a pin connected directly to the **Battery Positive (B+)**.  
+> This pin carries the **FULL battery voltage** (e.g., 12V, 24V, 48V+).  
+> 
+> **NEVER connect to Arduino!** Leave disconnected or **cut the wire entirely**.  
+> **Instant Arduino death guaranteed!** 💥
 
 ---
 
