@@ -82,6 +82,12 @@ JKBMSInterface bms(&Serial1);
 
 ---
 
+## Power State Logic
+
+It is important to note that the Arduino receives power **only** when the power station is connected to an external power source for charging.
+
+If the charging process completes successfully (or is aborted due to protection logic) and the Arduino disables the charger via the relay, the Arduino itself **remains powered on**. It will sit continuously in `RELAY_LOCKED` mode until the external power source is manually disconnected (e.g., by flipping a hardware switch or unplugging the station from the AC mains).
+
 ## Logic Workflow
 
 1. **Data Acquisition**: Every 10 seconds, the MCU requests data from the BMS via `Serial1`.
