@@ -82,19 +82,20 @@ JKBMSInterface bms(&Serial1);
 
 ---
 
-## Power State Logic
+### Operational Workflow & Power State
 
-It is important to note that the Arduino receives power **only** when the power station is connected to an external power source for charging.
+It is important to understand that the Arduino receives power **only** when the power station is connected to an external power source (e.g., AC mains) for charging.
 
-If the charging process completes successfully (or is aborted due to protection logic) and the Arduino disables the charger via the relay, the Arduino itself **remains powered on**. It will sit continuously in `RELAY_LOCKED` mode until the external power source is manually disconnected (e.g., by flipping a hardware switch or unplugging the station from the AC mains).
+Here is the complete step-by-step logic of how the system operates:
 
-## Logic Workflow
+1. **Power On:** You connect the station to the grid (or turn on the dedicated charging switch). The Arduino powers up and the main sketch starts. Because the charger's power supply is routed through the **Normally Closed (NC)** contacts of the relay, the charger turns on **immediately and automatically**. The Arduino does not actively initiate the charge; it only intervenes to shut it off later.
+2. **Data Acquisition:** Every 10 seconds, the MCU requests real-time data from the BMS via `Serial1`.
+3. **Self-Charge Protection:** If the system is charging but an abnormally high current draw is detected (e.g., the station is mistakenly plugged into its own inverter), the relay is triggered immediately, **opening the circuit and stopping the charging process**.
+4. **Shutdown Trigger:** Once the safe cut-off conditions are met (`SOC == 100%` AND current drops `<= 0.8A`), the MCU sends a signal to the relay. The relay opens the circuit, physically disconnecting the charger from the battery.
+5. **Locked State (`RELAY_LOCKED`):** The relay remains open (charger disconnected), and the Arduino enters a safe `RELAY_LOCKED` state. At this point, the Arduino itself **remains powered on** (since it draws power from the input side, prior to the relay cut-off). It continues to run but will not attempt to close the relay again. The system safely freezes to prevent the charger from micro-cycling on/off as the battery voltage naturally sags over time.
 
-1. **Data Acquisition**: Every 10 seconds, the MCU requests data from the BMS via `Serial1`.
-2. **Safety Check (Self-Charge Protection)**: If the system is in charging mode but an abnormally high current draw is detected (indicating the station is charging from its own inverter), the `RELAY_PIN` (Pin 3) is triggered immediately to abort the loop.
-3. **Peak Tracking**: The system monitors the maximum charging current.
-4. **Shutdown Trigger**: If `SOC == 100%` AND current `<= 0.8A` (and current is decreasing), the `RELAY_PIN` (Pin 3) is triggered.
-5. **Safety Lock**: Once triggered, the system enters `RELAY_LOCKED` mode to prevent the charger from cycling on/off repeatedly.
+**Result:** The charger will **not** turn back on automatically, even if the battery voltage later drops. To reset the system and start a new charging cycle, you must completely remove the external power input (e.g., by flipping the dedicated charging switch or unplugging the station). This powers down the Arduino, allowing a fresh cycle to start upon the next power-up.
+
 
 ---
 
